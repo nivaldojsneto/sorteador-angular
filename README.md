@@ -54,9 +54,9 @@ Você pode substituí-lo por qualquer som ```.mp3``` de sua preferência.
 
 Sugestões de sites para sons gratuitos:
 
-https://pixabay.com/pt/sound-effects/
+[Pixabay](https://pixabay.com/pt/sound-effects/)
 
-https://freesound.org/
+[Free Sound](https://freesound.org/)
 
 Substitua pelo arquivo original que esta em:
 
@@ -64,7 +64,4 @@ Substitua pelo arquivo original que esta em:
 src/assets/sounds/vitoria.mp3
 ```
 ## 📄 Licença
-Este projeto está licenciado sob a MIT License.
-
-
-Desenvolvido com 💙 usando Angular Standalone Components.
+Este projeto está licenciado sob a [MIT Licence](https://mit-license.org/).

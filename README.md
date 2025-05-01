@@ -63,5 +63,34 @@ Substitua pelo arquivo original que esta em:
 ```
 src/assets/sounds/vitoria.mp3
 ```
+
+## 🧪 Testes Unitários
+
+O projeto possui uma suíte completa de **testes unitários** utilizando **[Jest](https://jestjs.io/)**, com **100% de cobertura de código** nas funcionalidades principais.
+
+### 🔍 Funcionalidades testadas:
+
+- Carregamento da lista de itens com diferentes tipos de quebra de linha (`\\n` e `\\r\\n`)
+- Sorteio de múltiplos nomes de uma vez, com e sem animação
+- Limpeza completa dos dados com confirmação
+- Proteções contra ações indevidas (lista vazia, animação em andamento)
+- Execução correta dos efeitos de som e confete
+- Tratamento de erros no método `playSound()` (`.catch`)
+- Verificação do comportamento assíncrono com `setTimeout` e `jest.useFakeTimers()`
+
+### ▶️ Executando os testes
+
+```bash
+npm run test
+```
+
+Ou com relatório de cobertura:
+
+```bash
+npm run test -- --coverage
+```
+
+O relatório gerado em /coverage/lcov-report/index.html mostra todos os arquivos com 100% de statements, branches, functions e lines. """
+
 ## 📄 Licença
 Este projeto está licenciado sob a [MIT Licence](https://mit-license.org/).

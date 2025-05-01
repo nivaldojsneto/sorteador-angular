@@ -159,3 +159,38 @@ textarea {
     }
   }
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+.rotate-0 {
+  transform: rotate(0deg);
+}
+
+@media (max-width: 640px) {
+  textarea {
+    height: 150px !important;
+  }
+}
+
+.translate-x-6 {
+  transform: translateX(1.5rem);
+}
+.translate-x-0 {
+  transform: translateX(0);
+}

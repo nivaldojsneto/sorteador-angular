@@ -18,11 +18,16 @@ export class AppComponent implements OnInit {
   typingTimeout: any;
   mensagem: string | null = null;
   mensagemTimeout: any;
+  temaEscuroAtivo = false;
 
   private _quantidadeSorteios: number = 1;
 
   get quantidadeSorteios(): number {
     return this._quantidadeSorteios;
+  }
+
+  get iconeTema(): string {
+    return this.temaEscuroAtivo ? '☀️' : '🌙';
   }
 
   set quantidadeSorteios(valor: number) {
@@ -42,6 +47,25 @@ export class AppComponent implements OnInit {
     const dadosSalvos = localStorage.getItem('historicoSorteios');
     if (dadosSalvos) {
       this.itensSorteados = JSON.parse(dadosSalvos);
+    }
+    const temaSalvo = localStorage.getItem('tema');
+    this.temaEscuroAtivo = temaSalvo === 'dark';
+    this.atualizarTema();
+  }
+
+  alternarTema() {
+    this.temaEscuroAtivo = !this.temaEscuroAtivo;
+    this.atualizarTema();
+  }
+
+  atualizarTema() {
+    const html = document.documentElement;
+    if (this.temaEscuroAtivo) {
+      html.classList.add('dark');
+      localStorage.setItem('tema', 'dark');
+    } else {
+      html.classList.remove('dark');
+      localStorage.setItem('tema', 'light');
     }
   }
 

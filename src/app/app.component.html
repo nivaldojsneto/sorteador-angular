@@ -1,43 +1,106 @@
-<div class="container">
-  <h1>Sorteador de Itens</h1>
+<div
+  class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col sm:items-center sm:justify-center p-4"
+>
+  <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mt-8">
+    <!-- Título + Alternância de Tema -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">Sorteador de Nomes</h1>
+      <button
+        (click)="alternarTema()"
+        class="relative inline-flex items-center w-14 h-8 rounded-full transition-colors duration-300 ease-in-out bg-gray-300 dark:bg-gray-700"
+      >
+        <span
+          class="absolute left-1 top-1 w-6 h-6 rounded-full bg-white transform transition-transform duration-300 ease-in-out"
+          [ngClass]="{ 'translate-x-6': temaEscuroAtivo, 'translate-x-0': !temaEscuroAtivo }"
+        ></span>
 
-  <textarea
-    [(ngModel)]="textoLista"
-    placeholder="Cole aqui os itens (um por linha) ou digite manualmente"
-    rows="6"
-    (paste)="onPaste()"
-    (input)="onInput()"
-  >
-  </textarea>
+        <svg
+          class="absolute left-1 top-1 w-6 h-6 text-yellow-400 transition-opacity duration-300"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          *ngIf="!temaEscuroAtivo"
+        >
+          <path d="M10 15a5 5 0 100-10 5 5 0 000 10z"></path>
+        </svg>
 
-  <div class="qtd-sorteios">
-    <label for="quantidade">Quantidade de sorteios:</label>
-    <input type="number" [(ngModel)]="quantidadeSorteios" min="1" />
-  </div>
+        <svg
+          class="absolute left-7 top-1 w-6 h-6 text-gray-200 transition-opacity duration-300"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          *ngIf="temaEscuroAtivo"
+        >
+          <path
+            d="M17.293 13.293A8 8 0 016.707 2.707 8.001 8.001 0 0010 18a8 8 0 007.293-4.707z"
+          ></path>
+        </svg>
+      </button>
+    </div>
 
-  <div class="actions">
-    <button (click)="sortear()" [disabled]="lista.length === 0">🎯 Sortear</button>
-    <button (click)="resetar()" *ngIf="listaOriginal.length">🔁 Resetar</button>
-    <button (click)="limparHistoricoSorteios()">🧹 Limpar apenas o histórico</button>
-  </div>
+    <!-- Textarea -->
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      Cole os nomes (um por linha):
+    </label>
+    <textarea
+      [(ngModel)]="textoLista"
+      (input)="onInput()"
+      (paste)="onPaste()"
+      class="w-full h-40 p-3 border rounded-lg mb-4 focus:outline-none focus:ring focus:border-blue-300 resize-none dark:bg-gray-700 dark:text-white"
+      placeholder="Ex: Ana\nCarlos\nMaria"
+    ></textarea>
 
-  <div *ngIf="mensagem" class="alerta">
-    {{ mensagem }}
-  </div>
+    <!-- Quantidade e botão Sortear -->
+    <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Quantidade de sorteios:
+        </label>
+        <input
+          type="number"
+          [(ngModel)]="quantidadeSorteios"
+          class="w-full p-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-700 dark:text-white"
+          min="1"
+        />
+      </div>
+      <button
+        (click)="sortear()"
+        [disabled]="lista.length === 0 || animando"
+        class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg mt-2 sm:mt-7 hover:bg-blue-700 transition disabled:opacity-50"
+      >
+        Sortear
+      </button>
+    </div>
 
-  <div class="resultado-wrapper">
-    <div class="resultado" [class.animado]="animando">
-      <ng-container *ngIf="itensSorteados.length; else aguardando">
-        <div *ngFor="let item of itensFiltrados">{{ item }}</div>
-      </ng-container>
-      <ng-template #aguardando> Aguardando sorteio... </ng-template>
+    <!-- Mensagem -->
+    <div
+      *ngIf="mensagem"
+      class="bg-yellow-100 dark:bg-yellow-200 text-yellow-700 text-sm p-2 rounded mb-4 fade-in"
+    >
+      {{ mensagem }}
+    </div>
+
+    <!-- Resultados -->
+    <div *ngIf="itensFiltrados.length > 0" id="resultado" class="mb-6 fade-in">
+      <h2 class="text-lg font-semibold mb-2">Resultado:</h2>
+      <ul class="list-disc list-inside space-y-1 text-green-700 dark:text-green-400">
+        <li *ngFor="let nome of itensFiltrados">{{ nome }}</li>
+      </ul>
+    </div>
+
+    <!-- Botões secundários -->
+    <div class="flex justify-end gap-2">
+      <button (click)="resetar()" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
+        Limpar lista
+      </button>
+      <button
+        (click)="limparHistoricoSorteios()"
+        class="text-sm text-gray-600 dark:text-gray-300 hover:underline"
+      >
+        Limpar histórico
+      </button>
     </div>
   </div>
 
-  <div *ngIf="itensSorteados.length > 0">
-    <h3>Histórico de Sorteios:</h3>
-    <ul>
-      <li *ngFor="let item of itensSorteados">{{ item }}</li>
-    </ul>
-  </div>
+  <footer class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
+    Desenvolvido por Nivaldo • © 2025
+  </footer>
 </div>

@@ -1,9 +1,6 @@
-readme_content = """
-# 🏆 Sorteador de Itens Angular (Standalone)
+# 🏆 Sorteador de Itens Angular
 
 Um aplicativo web desenvolvido com **Angular 19 (Standalone Components)** que permite colar uma lista de nomes ou itens e realizar sorteios com animação, som de vitória e uma interface moderna e responsiva.
-
----
 
 ## ✨ Funcionalidades
 
@@ -16,18 +13,58 @@ Um aplicativo web desenvolvido com **Angular 19 (Standalone Components)** que pe
 ✅ Interface limpa e responsiva  
 ✅ Suporte a modo standalone (sem `AppModule`)
 
----
-
-## 🎬 Demonstração
-
-![demo](demo.gif) *(adicione um gif ou imagem aqui se desejar)*
-
----
-
 ## 🚀 Como usar
 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/sorteador-angular.git
+git clone https://github.com/nivaldojsneto/sorteador-angular.git
 cd sorteador-angular
+```
+
+### 2. Instale as dependências do projeto
+```bash
+npm install
+```
+
+### 3. Rode o servidor local
+```bash
+ng serve
+```
+Abra seu navegador em: http://localhost:4200
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── app/
+│   ├── app.component.ts
+│   ├── app.component.html
+│   └── app.component.css
+├── assets/
+│   └── sounds/
+│       └── vitoria.mp3
+└── main.ts
+```
+## 🔊 Som de Vitória
+
+O projeto já vem com um arquivo chamado ```vitoria.mp3```.
+
+Você pode substituí-lo por qualquer som ```.mp3``` de sua preferência.
+
+Sugestões de sites para sons gratuitos:
+
+https://pixabay.com/pt/sound-effects/
+
+https://freesound.org/
+
+Substitua pelo arquivo original que esta em:
+
+```
+src/assets/sounds/vitoria.mp3
+```
+## 📄 Licença
+Este projeto está licenciado sob a MIT License.
+
+
+Desenvolvido com 💙 usando Angular Standalone Components.

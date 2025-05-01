@@ -1,19 +1,20 @@
-# 🏆 Sorteador de Itens Angular
+# 🏆 Sorteador Interativo de Itens - Angular 🚀
 
-Um aplicativo web desenvolvido com **Angular 19 (Standalone Components)** que permite colar uma lista de nomes ou itens e realizar sorteios com animação, som de vitória e uma interface moderna e responsiva.
 
-## ✨ Funcionalidades
+Crie experiências únicas com este poderoso e moderno **sorteador de nomes ou itens**, desenvolvido com **Angular 19 e componentes standalone**. Perfeito para sorteios em tempo real, dinâmicas de grupo, eventos, premiações ou simplesmente para tornar qualquer lista em algo divertido e surpreendente.
 
-✅ Cole ou **digite** rapidamente uma lista de nomes ou itens (um por linha)
-✅ O campo de texto é **automaticamente limpo de linhas em branco** ao carregar a lista.
-✅ A lista é carregada **automaticamente ao parar de digitar** (com debounce de 500ms)
-✅ Sorteia um ou mais itens aleatórios com **animação moderna**
-✅ Reproduz **som de vitória** e exibe **confetes** ao sortear  
-✅ O resultado sorteado é sempre exibido com destaque animado  
-✅ Permite escolher a quantidade de sorteios  
-✅ Botão de reset com confirmação para evitar apagamento acidental  
-✅ Interface limpa, responsiva e com 100% de cobertura de testes com Jest  
-✅ Suporte a modo standalone do Angular 19
+✨ Com uma interface elegante e intuitiva, este app transforma listas em momentos memoráveis com:
+
+- ✅ **Sorteios animados**, com nome do ganhador destacado e piscando
+- ✅ **Confetes explodindo** na tela ao estilo celebração 🎊
+- ✅ **Som de vitória** para reforçar o impacto do sorteio 🔊
+- ✅ **Sorteio múltiplo** de vários itens em um clique
+- ✅ **Auto-carregamento da lista** ao digitar ou colar
+- ✅ **Limpeza automática de linhas em branco**
+- ✅ **Reset seguro com confirmação**
+- ✅ Tudo isso com **100% de cobertura de testes unitários com Jest** 🧪
+
+💡 Simples o suficiente para qualquer pessoa usar, poderoso o bastante para qualquer situação.
 
 ## 🚀 Como usar
 
@@ -40,9 +41,10 @@ Abra seu navegador em: http://localhost:4200
 ```
 src/
 ├── app/
-│   ├── app.component.ts
 │   ├── app.component.html
-│   └── app.component.css
+│   ├── app.component.scss
+│   ├── app.component.spec.ts
+│   └── app.component.ts
 ├── assets/
 │   └── sounds/
 │       └── vitoria.mp3
@@ -73,17 +75,29 @@ O projeto possui uma suíte completa de **testes unitários** utilizando **[Jest
 ### 🔍 Funcionalidades testadas:
 
 ✅ **Carregamento da lista** com diferentes quebras de linha (`\\n` e `\\r\\n`)
-✅ **Remoção automática de linhas em branco** e espaços antes de processar a lista
-✅ **Limpeza visual do campo de texto (textarea)** ao carregar a lista
-✅ **Sorteio de múltiplos nomes de uma só vez**, respeitando a quantidade definida
+
+✅ **Remoção automática de linhas em branco** e espaços antes de processar a lista 
+
+✅ **Limpeza visual do campo de texto (textarea)** ao carregar a lista 
+
+✅ **Sorteio de múltiplos nomes de uma só vez**, respeitando a quantidade definida 
+
 ✅ **Comportamento ao tentar sortear com lista vazia**
+
 ✅ **Prevenção de sorteio durante animação ativa**
+
 ✅ **Reset completo com confirmação do usuário**
+
 ✅ **Preservação de dados se reset for cancelado**
+
 ✅ **Auto-carregamento da lista ao parar de digitar** (debounce de 500ms)
+
 ✅ **Chamadas aos efeitos visuais** (`playSound` e `playConfete`)
+
 ✅ **Tratamento de erro ao executar `audio.play()`** com `.catch`
+
 ✅ **Verificação de execução assíncrona com `setTimeout`**
+
 ✅ **Getter `itensFiltrados`** retorna apenas entradas válidas para exibição
 
 ### ▶️ Executando os testes

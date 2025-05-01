@@ -1,0 +1,112 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f2f4f8;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+
+  h1 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+    margin-bottom: 12px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 10px 16px;
+    font-size: 16px;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    &:hover:enabled {
+      background-color: #357ab8;
+    }
+  }
+
+  ul.lista {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-top: 20px;
+    max-height: 150px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+
+    li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+  }
+
+  .resultado-wrapper {
+    margin-top: 30px;
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .resultado {
+      font-size: 26px;
+      font-weight: bold;
+      color: #27ae60;
+      background: #e8f5e9;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.4s ease;
+      opacity: 0.9;
+      transform: scale(1);
+
+      &.animado {
+        animation: destaque 1s ease infinite;
+      }
+    }
+  }
+}
+
+@keyframes destaque {
+  0% {
+    transform: scale(0.7) translateY(20px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateY(0px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}

@@ -16,6 +16,7 @@ export class AppComponent {
   quantidadeSorteios: number = 1;
   itensSorteados: string[] = [];
   animando: boolean = false;
+  typingTimeout: any;
 
   carregarLista() {
     this.lista = this.textoLista
@@ -24,6 +25,13 @@ export class AppComponent {
       .filter((item) => item !== '');
     this.listaOriginal = [...this.lista];
     this.itensSorteados = []; // 🔑 limpa sorteios anteriores
+  }
+
+  onInput() {
+    clearTimeout(this.typingTimeout);
+    this.typingTimeout = setTimeout(() => {
+      this.carregarLista();
+    }, 500);
   }
 
   sortear() {

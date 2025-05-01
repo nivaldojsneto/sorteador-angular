@@ -4,14 +4,15 @@ Um aplicativo web desenvolvido com **Angular 19 (Standalone Components)** que pe
 
 ## ✨ Funcionalidades
 
-✅ Cole rapidamente uma lista de nomes ou itens (um por linha)  
-✅ Lista é processada automaticamente ao colar  
-✅ Sorteia um item aleatoriamente com **animação moderna**  
-✅ Reproduz **som de vitória** ao sortear  
-✅ O resultado sorteado é sempre exibido com destaque  
-✅ Botão de **reset** com confirmação para evitar apagamento acidental  
-✅ Interface limpa e responsiva  
-✅ Suporte a modo standalone (sem `AppModule`)
+✅ Cole ou **digite** rapidamente uma lista de nomes ou itens (um por linha)  
+✅ A lista é carregada **automaticamente ao parar de digitar** (com debounce de 500ms)  
+✅ Sorteia um ou mais itens aleatórios com **animação moderna**  
+✅ Reproduz **som de vitória** e exibe **confetes** ao sortear  
+✅ O resultado sorteado é sempre exibido com destaque animado  
+✅ Permite escolher a quantidade de sorteios  
+✅ Botão de reset com confirmação para evitar apagamento acidental  
+✅ Interface limpa, responsiva e com 100% de cobertura de testes com Jest  
+✅ Suporte a modo standalone do Angular 19
 
 ## 🚀 Como usar
 
@@ -70,13 +71,14 @@ O projeto possui uma suíte completa de **testes unitários** utilizando **[Jest
 
 ### 🔍 Funcionalidades testadas:
 
-- Carregamento da lista de itens com diferentes tipos de quebra de linha (`\\n` e `\\r\\n`)
-- Sorteio de múltiplos nomes de uma vez, com e sem animação
-- Limpeza completa dos dados com confirmação
-- Proteções contra ações indevidas (lista vazia, animação em andamento)
-- Execução correta dos efeitos de som e confete
-- Tratamento de erros no método `playSound()` (`.catch`)
-- Verificação do comportamento assíncrono com `setTimeout` e `jest.useFakeTimers()`
+✅ Carregamento da lista de itens com diferentes tipos de quebra de linha (`\\n` e `\\r\\n`)
+✅ Sorteio de múltiplos items de uma vez
+✅ Limpeza completa dos dados com confirmação
+✅ Proteções contra ações indevidas (lista vazia, animação em andamento)
+✅ Execução correta dos efeitos de som e confete
+✅ Tratamento de erros no método `playSound()` (`.catch`)
+✅ Verificação do comportamento assíncrono com `setTimeout` e `jest.useFakeTimers()`
+✅ Carregamento automático ao parar de digitar (`onInput` com debounce)
 
 ### ▶️ Executando os testes
 
@@ -90,7 +92,7 @@ Ou com relatório de cobertura:
 npm run test -- --coverage
 ```
 
-O relatório gerado em /coverage/lcov-report/index.html mostra todos os arquivos com 100% de statements, branches, functions e lines. """
+O relatório gerado em `/coverage/lcov-report/index.html` mostra todos os arquivos com 100% de statements, branches, functions e lines. """
 
 ## 📄 Licença
 Este projeto está licenciado sob a [MIT Licence](https://mit-license.org/).

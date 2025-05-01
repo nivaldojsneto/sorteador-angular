@@ -22,6 +22,16 @@ describe('AppComponent com Jest (100% cobertura incluindo .catch)', () => {
     expect(component).toBeTruthy();
   });
 
+  test('onInput chama carregarLista após pausa na digitação', () => {
+    const carregarSpy = jest.spyOn(component, 'carregarLista');
+    jest.useFakeTimers();
+    component.textoLista = 'João\\nMaria\\nCarlos';
+    component.onInput(); // simula digitação
+    expect(carregarSpy).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(500); // tempo de debounce
+    expect(carregarSpy).toHaveBeenCalled();
+  });
+
   test('carregarLista limpa itens sorteados', () => {
     component.itensSorteados = ['A'];
     component.textoLista = `João

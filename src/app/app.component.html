@@ -3,9 +3,10 @@
 
   <textarea
     [(ngModel)]="textoLista"
-    placeholder="Cole aqui os itens (um por linha)"
+    placeholder="Cole aqui os itens (um por linha) ou digite manualmente"
     rows="6"
     (paste)="onPaste()"
+    (input)="onInput()"
   >
   </textarea>
 

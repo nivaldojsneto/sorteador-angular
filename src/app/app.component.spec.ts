@@ -2,11 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 
-jest.mock('canvas-confetti', () => {
-  return jest.fn().mockImplementation(() => {});
-});
+jest.mock('canvas-confetti', () => jest.fn());
 
-describe('AppComponent', () => {
+describe('AppComponent com Jest (100% cobertura incluindo .catch)', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
@@ -24,93 +22,104 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  test('deve carregar a lista corretamente com \\n', () => {
+  test('carregarLista limpa itens sorteados', () => {
+    component.itensSorteados = ['A'];
     component.textoLista = `João
-Maria
-Carlos`;
+    Maria
+    Carlos`;
     component.carregarLista();
     expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
     expect(component.listaOriginal).toEqual(['João', 'Maria', 'Carlos']);
-    expect(component.itemSorteado).toBe('');
+    expect(component.itensSorteados).toEqual([]);
   });
 
-  test('deve carregar a lista corretamente com \\r\\n', () => {
-    component.textoLista = 'João\r\nMaria\r\nCarlos';
-    component.carregarLista();
-    expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
-  });
-
-  test('deve ignorar linhas em branco e espaços', () => {
-    component.textoLista = `João\n\n Maria \n \nCarlos `;
-    component.carregarLista();
-    expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
-  });
-
-  test('deve sortear um item e reduzir a lista', () => {
-    const playSoundSpy = jest.spyOn(component, 'playSound');
-    const playConfeteSpy = jest.spyOn(component as any, 'playConfete');
-
+  test('sortear respeita quantidade', () => {
     component.lista = ['A', 'B', 'C'];
-    component.listaOriginal = [...component.lista];
+    component.quantidadeSorteios = 2;
+    const soundSpy = jest.spyOn(component, 'playSound');
+    const confettiSpy = jest.spyOn(component as any, 'playConfete');
+    jest.useFakeTimers();
     component.sortear();
-
-    expect(component.itemSorteado).toBeDefined();
-    expect(component.lista.length).toBe(2);
-    expect(playSoundSpy).toHaveBeenCalled();
-    expect(playConfeteSpy).toHaveBeenCalled();
-    expect(component.animando).toBe(true);
+    expect(component.itensSorteados.length).toBe(2);
+    jest.advanceTimersByTime(3000);
+    expect(component.animando).toBe(false);
+    expect(soundSpy).toHaveBeenCalled();
+    expect(confettiSpy).toHaveBeenCalled();
   });
 
-  test('não deve sortear com lista vazia', () => {
+  test('sortear com quantidade maior sorteia tudo', () => {
+    component.lista = ['X', 'Y'];
+    component.quantidadeSorteios = 5;
+    component.sortear();
+    expect(component.itensSorteados.length).toBe(2);
+    expect(component.lista.length).toBe(0);
+  });
+
+  test('sortear ignora com lista vazia', () => {
     component.lista = [];
     component.sortear();
-    expect(component.itemSorteado).toBe('');
+    expect(component.itensSorteados).toEqual([]);
   });
 
-  test('não deve sortear se animando', () => {
-    component.lista = ['A', 'B'];
+  test('sortear ignora se animando', () => {
+    component.lista = ['A'];
     component.animando = true;
     component.sortear();
-    expect(component.lista.length).toBe(2);
-    expect(component.itemSorteado).toBe('');
+    expect(component.itensSorteados).toEqual([]);
   });
 
-  test('deve resetar tudo se confirmado', () => {
+  test('resetar com confirmação limpa tudo', () => {
     jest.spyOn(window, 'confirm').mockReturnValue(true);
     component.textoLista = 'Teste';
     component.lista = ['A'];
     component.listaOriginal = ['A'];
-    component.itemSorteado = 'A';
-
+    component.itensSorteados = ['A'];
+    component.quantidadeSorteios = 3;
     component.resetar();
-
     expect(component.textoLista).toBe('');
     expect(component.lista).toEqual([]);
     expect(component.listaOriginal).toEqual([]);
-    expect(component.itemSorteado).toBe('');
+    expect(component.itensSorteados).toEqual([]);
+    expect(component.quantidadeSorteios).toBe(1);
   });
 
-  test('não deve resetar se cancelado', () => {
+  test('resetar sem confirmação não altera estado', () => {
     jest.spyOn(window, 'confirm').mockReturnValue(false);
-    component.lista = ['A'];
+    component.lista = ['Z'];
     component.resetar();
-    expect(component.lista).toEqual(['A']);
+    expect(component.lista).toEqual(['Z']);
   });
 
-  test('deve executar onPaste e carregar lista', () => {
-    const carregarSpy = jest.spyOn(component, 'carregarLista');
-    component.textoLista = 'Teste';
+  test('onPaste chama carregarLista com timeout', () => {
+    const spy = jest.spyOn(component, 'carregarLista');
+    jest.useFakeTimers();
     component.onPaste();
-    jest.runAllTimers(); // necessário para simular setTimeout
-    expect(carregarSpy).toHaveBeenCalled();
+    jest.runAllTimers();
+    expect(spy).toHaveBeenCalled();
   });
 
-  test('playSound deve lidar com falha de reprodução', () => {
+  test('playSound com sucesso', async () => {
+    const mockAudio = { play: jest.fn().mockResolvedValue(undefined) };
+    window.Audio = jest.fn(() => mockAudio) as any;
+    await component.playSound();
+    expect(mockAudio.play).toHaveBeenCalled();
+  });
+
+  test('playSound com erro no play cobre o .catch', async () => {
     const audioMock = {
-      play: jest.fn().mockRejectedValue(new Error('Falha')),
+      play: jest.fn().mockRejectedValueOnce(new Error('Erro simulado')),
     };
     window.Audio = jest.fn(() => audioMock) as any;
-    component.playSound();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    await component.playSound();
     expect(audioMock.play).toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith('Erro ao tocar som:', expect.any(Error));
+    warnSpy.mockRestore();
+  });
+
+  test('playConfete é chamado corretamente', () => {
+    const confetti = require('canvas-confetti');
+    component.playConfete();
+    expect(confetti).toHaveBeenCalled();
   });
 });

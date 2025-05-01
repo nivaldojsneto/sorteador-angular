@@ -9,6 +9,17 @@
   >
   </textarea>
 
+  <div class="qtd-sorteios">
+    <label for="quantidade">Quantidade de sorteios:</label>
+    <input
+      type="number"
+      id="quantidade"
+      [(ngModel)]="quantidadeSorteios"
+      min="1"
+      [max]="lista.length"
+    />
+  </div>
+
   <div class="actions">
     <button (click)="sortear()" [disabled]="lista.length === 0">🎯 Sortear</button>
     <button (click)="resetar()" *ngIf="listaOriginal.length">🔁 Resetar</button>
@@ -16,7 +27,10 @@
 
   <div class="resultado-wrapper">
     <div class="resultado" [class.animado]="animando">
-      {{ itemSorteado || 'Aguardando sorteio...' }}
+      <ng-container *ngIf="itensSorteados.length; else aguardando">
+        <div *ngFor="let item of itensSorteados">{{ item }}</div>
+      </ng-container>
+      <ng-template #aguardando> Aguardando sorteio... </ng-template>
     </div>
   </div>
 </div>

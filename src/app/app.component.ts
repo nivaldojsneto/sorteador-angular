@@ -13,7 +13,8 @@ export class AppComponent {
   textoLista: string = '';
   lista: string[] = [];
   listaOriginal: string[] = [];
-  itemSorteado: string = '';
+  quantidadeSorteios: number = 1;
+  itensSorteados: string[] = [];
   animando: boolean = false;
 
   carregarLista() {
@@ -22,15 +23,22 @@ export class AppComponent {
       .map((item) => item.trim())
       .filter((item) => item !== '');
     this.listaOriginal = [...this.lista];
-    this.itemSorteado = '';
+    this.itensSorteados = []; // 🔑 limpa sorteios anteriores
   }
 
   sortear() {
     if (this.lista.length === 0 || this.animando) return;
 
-    const index = Math.floor(Math.random() * this.lista.length);
-    this.itemSorteado = this.lista[index];
-    this.lista.splice(index, 1);
+    const qtd = Math.min(this.quantidadeSorteios, this.lista.length);
+    const sorteados: string[] = [];
+
+    for (let i = 0; i < qtd; i++) {
+      const index = Math.floor(Math.random() * this.lista.length);
+      sorteados.push(this.lista[index]);
+      this.lista.splice(index, 1);
+    }
+
+    this.itensSorteados = sorteados;
 
     this.playSound();
     this.playConfete();
@@ -48,7 +56,8 @@ export class AppComponent {
     this.textoLista = '';
     this.lista = [];
     this.listaOriginal = [];
-    this.itemSorteado = '';
+    this.itensSorteados = [];
+    this.quantidadeSorteios = 1;
   }
 
   onPaste() {
@@ -57,9 +66,13 @@ export class AppComponent {
     }, 0);
   }
 
-  playSound() {
-    const audio = new Audio('assets/sounds/vitoria.mp3');
-    audio.play().catch((e) => console.warn('Erro ao tocar som:', e));
+  async playSound() {
+    try {
+      const audio = new Audio('assets/sounds/vitoria.mp3');
+      await audio.play();
+    } catch (e) {
+      console.warn('Erro ao tocar som:', e);
+    }
   }
 
   playConfete() {

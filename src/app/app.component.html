@@ -12,18 +12,17 @@
 
   <div class="qtd-sorteios">
     <label for="quantidade">Quantidade de sorteios:</label>
-    <input
-      type="number"
-      id="quantidade"
-      [(ngModel)]="quantidadeSorteios"
-      min="1"
-      [max]="lista.length"
-    />
+    <input type="number" [(ngModel)]="quantidadeSorteios" min="1" />
   </div>
 
   <div class="actions">
     <button (click)="sortear()" [disabled]="lista.length === 0">🎯 Sortear</button>
     <button (click)="resetar()" *ngIf="listaOriginal.length">🔁 Resetar</button>
+    <button (click)="limparHistoricoSorteios()">🧹 Limpar apenas o histórico</button>
+  </div>
+
+  <div *ngIf="mensagem" class="alerta">
+    {{ mensagem }}
   </div>
 
   <div class="resultado-wrapper">
@@ -33,5 +32,12 @@
       </ng-container>
       <ng-template #aguardando> Aguardando sorteio... </ng-template>
     </div>
+  </div>
+
+  <div *ngIf="itensSorteados.length > 0">
+    <h3>Histórico de Sorteios:</h3>
+    <ul>
+      <li *ngFor="let item of itensSorteados">{{ item }}</li>
+    </ul>
   </div>
 </div>

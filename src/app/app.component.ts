@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import confetti from 'canvas-confetti';
 
@@ -9,14 +9,41 @@ import confetti from 'canvas-confetti';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   textoLista: string = '';
   lista: string[] = [];
   listaOriginal: string[] = [];
-  quantidadeSorteios: number = 1;
   itensSorteados: string[] = [];
   animando: boolean = false;
   typingTimeout: any;
+  mensagem: string | null = null;
+  mensagemTimeout: any;
+
+  private _quantidadeSorteios: number = 1;
+
+  get quantidadeSorteios(): number {
+    return this._quantidadeSorteios;
+  }
+
+  set quantidadeSorteios(valor: number) {
+    this._quantidadeSorteios = valor;
+    this.itensSorteados = [];
+    localStorage.removeItem('historicoSorteios');
+
+    // Mensagem temporária
+    this.mensagem = 'A lista de ganhadores foi reiniciada.';
+    clearTimeout(this.mensagemTimeout);
+    this.mensagemTimeout = setTimeout(() => {
+      this.mensagem = null;
+    }, 3000);
+  }
+
+  ngOnInit(): void {
+    const dadosSalvos = localStorage.getItem('historicoSorteios');
+    if (dadosSalvos) {
+      this.itensSorteados = JSON.parse(dadosSalvos);
+    }
+  }
 
   get itensFiltrados() {
     return this.itensSorteados.filter((i) => i.trim());
@@ -52,7 +79,8 @@ export class AppComponent {
       this.lista.splice(index, 1);
     }
 
-    this.itensSorteados = sorteados;
+    this.itensSorteados = [...sorteados, ...this.itensSorteados];
+    localStorage.setItem('historicoSorteios', JSON.stringify(this.itensSorteados));
 
     this.playSound();
     this.playConfete();
@@ -72,6 +100,15 @@ export class AppComponent {
     this.listaOriginal = [];
     this.itensSorteados = [];
     this.quantidadeSorteios = 1;
+    localStorage.removeItem('historicoSorteios');
+  }
+
+  limparHistoricoSorteios() {
+    const confirmar = confirm('Deseja limpar apenas o histórico de sorteios?');
+    if (!confirmar) return;
+
+    this.itensSorteados = [];
+    localStorage.removeItem('historicoSorteios');
   }
 
   onPaste() {

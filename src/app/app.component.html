@@ -29,7 +29,7 @@
   <div class="resultado-wrapper">
     <div class="resultado" [class.animado]="animando">
       <ng-container *ngIf="itensSorteados.length; else aguardando">
-        <div *ngFor="let item of itensSorteados">{{ item }}</div>
+        <div *ngFor="let item of itensFiltrados">{{ item }}</div>
       </ng-container>
       <ng-template #aguardando> Aguardando sorteio... </ng-template>
     </div>

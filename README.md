@@ -4,9 +4,10 @@ Um aplicativo web desenvolvido com **Angular 19 (Standalone Components)** que pe
 
 ## ✨ Funcionalidades
 
-✅ Cole ou **digite** rapidamente uma lista de nomes ou itens (um por linha)  
-✅ A lista é carregada **automaticamente ao parar de digitar** (com debounce de 500ms)  
-✅ Sorteia um ou mais itens aleatórios com **animação moderna**  
+✅ Cole ou **digite** rapidamente uma lista de nomes ou itens (um por linha)
+✅ O campo de texto é **automaticamente limpo de linhas em branco** ao carregar a lista.
+✅ A lista é carregada **automaticamente ao parar de digitar** (com debounce de 500ms)
+✅ Sorteia um ou mais itens aleatórios com **animação moderna**
 ✅ Reproduz **som de vitória** e exibe **confetes** ao sortear  
 ✅ O resultado sorteado é sempre exibido com destaque animado  
 ✅ Permite escolher a quantidade de sorteios  
@@ -71,14 +72,19 @@ O projeto possui uma suíte completa de **testes unitários** utilizando **[Jest
 
 ### 🔍 Funcionalidades testadas:
 
-✅ Carregamento da lista de itens com diferentes tipos de quebra de linha (`\\n` e `\\r\\n`)
-✅ Sorteio de múltiplos items de uma vez
-✅ Limpeza completa dos dados com confirmação
-✅ Proteções contra ações indevidas (lista vazia, animação em andamento)
-✅ Execução correta dos efeitos de som e confete
-✅ Tratamento de erros no método `playSound()` (`.catch`)
-✅ Verificação do comportamento assíncrono com `setTimeout` e `jest.useFakeTimers()`
-✅ Carregamento automático ao parar de digitar (`onInput` com debounce)
+✅ **Carregamento da lista** com diferentes quebras de linha (`\\n` e `\\r\\n`)
+✅ **Remoção automática de linhas em branco** e espaços antes de processar a lista
+✅ **Limpeza visual do campo de texto (textarea)** ao carregar a lista
+✅ **Sorteio de múltiplos nomes de uma só vez**, respeitando a quantidade definida
+✅ **Comportamento ao tentar sortear com lista vazia**
+✅ **Prevenção de sorteio durante animação ativa**
+✅ **Reset completo com confirmação do usuário**
+✅ **Preservação de dados se reset for cancelado**
+✅ **Auto-carregamento da lista ao parar de digitar** (debounce de 500ms)
+✅ **Chamadas aos efeitos visuais** (`playSound` e `playConfete`)
+✅ **Tratamento de erro ao executar `audio.play()`** com `.catch`
+✅ **Verificação de execução assíncrona com `setTimeout`**
+✅ **Getter `itensFiltrados`** retorna apenas entradas válidas para exibição
 
 ### ▶️ Executando os testes
 

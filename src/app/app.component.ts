@@ -18,12 +18,18 @@ export class AppComponent {
   animando: boolean = false;
   typingTimeout: any;
 
+  get itensFiltrados() {
+    return this.itensSorteados.filter((i) => i.trim());
+  }
+
   carregarLista() {
-    this.lista = this.textoLista
+    const linhas = this.textoLista
       .split(/\r?\n/) // aceita \n (Unix) ou \r\n (Windows)
       .map((item) => item.trim())
-      .filter((item) => item !== '');
-    this.listaOriginal = [...this.lista];
+      .filter((item) => item.length > 0);
+    this.lista = linhas;
+    this.listaOriginal = [...linhas];
+    this.textoLista = linhas.join('\n'); // atualiza o textarea sem linhas em branco
     this.itensSorteados = []; // 🔑 limpa sorteios anteriores
   }
 

@@ -32,6 +32,19 @@ describe('AppComponent com Jest (100% cobertura incluindo .catch)', () => {
     expect(carregarSpy).toHaveBeenCalled();
   });
 
+  test('carregarLista remove linhas em branco ou espaços', () => {
+    component.textoLista = `João\n\n Maria \n    \nCarlos `;
+    component.carregarLista();
+    expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
+  });
+
+  test('carregarLista limpa o textoLista removendo linhas em branco', () => {
+    component.textoLista = `João\n\n  \nMaria\nCarlos\n   `;
+    component.carregarLista();
+    expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
+    expect(component.textoLista).toBe('João\nMaria\nCarlos');
+  });
+
   test('carregarLista limpa itens sorteados', () => {
     component.itensSorteados = ['A'];
     component.textoLista = `João
@@ -41,6 +54,12 @@ describe('AppComponent com Jest (100% cobertura incluindo .catch)', () => {
     expect(component.lista).toEqual(['João', 'Maria', 'Carlos']);
     expect(component.listaOriginal).toEqual(['João', 'Maria', 'Carlos']);
     expect(component.itensSorteados).toEqual([]);
+  });
+
+  test('itensFiltrados retorna apenas itens válidos (sem espaços)', () => {
+    component.itensSorteados = ['João', ' ', 'Carlos', '', '   ', 'Maria'];
+    const filtrados = component.itensFiltrados;
+    expect(filtrados).toEqual(['João', 'Carlos', 'Maria']);
   });
 
   test('sortear respeita quantidade', () => {

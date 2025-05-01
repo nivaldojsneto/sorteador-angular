@@ -15,38 +15,14 @@ export class AppComponent {
   listaOriginal: string[] = [];
   itemSorteado: string = '';
   animando: boolean = false;
-  mostrarLista: boolean = false;
-
-  onPaste() {
-    // Aguarda o ngModel atualizar o conteúdo colado
-    setTimeout(() => {
-      this.carregarLista();
-    }, 0); // 0 já é suficiente para esperar o próximo tick
-  }
-
-  playConfete() {
-    confetti({
-      particleCount: 150,
-      spread: 100,
-      origin: { y: 0.6 },
-    });
-  }
 
   carregarLista() {
     this.lista = this.textoLista
-      .split('\n')
+      .split(/\r?\n/) // aceita \n (Unix) ou \r\n (Windows)
       .map((item) => item.trim())
       .filter((item) => item !== '');
     this.listaOriginal = [...this.lista];
     this.itemSorteado = '';
-    this.mostrarLista = false; // Oculta após carregar
-  }
-
-  playSound() {
-    const audio = new Audio('assets/sounds/vitoria.mp3');
-    audio.play().catch((e) => {
-      console.warn('Erro ao tocar som:', e);
-    });
   }
 
   sortear() {
@@ -56,13 +32,13 @@ export class AppComponent {
     this.itemSorteado = this.lista[index];
     this.lista.splice(index, 1);
 
-    this.playSound(); // 🔊 Toca o som
-    this.playConfete(); // 🔊 Estoura o confete
+    this.playSound();
+    this.playConfete();
 
     this.animando = true;
     setTimeout(() => {
-      this.animando = true;
-    }, 2000); // tempo da animação
+      this.animando = false;
+    }, 3000);
   }
 
   resetar() {
@@ -73,6 +49,24 @@ export class AppComponent {
     this.lista = [];
     this.listaOriginal = [];
     this.itemSorteado = '';
-    this.mostrarLista = false;
+  }
+
+  onPaste() {
+    setTimeout(() => {
+      this.carregarLista();
+    }, 0);
+  }
+
+  playSound() {
+    const audio = new Audio('assets/sounds/vitoria.mp3');
+    audio.play().catch((e) => console.warn('Erro ao tocar som:', e));
+  }
+
+  playConfete() {
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 },
+    });
   }
 }

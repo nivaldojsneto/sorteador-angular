@@ -14,10 +14,6 @@
     <button (click)="resetar()" *ngIf="listaOriginal.length">🔁 Resetar</button>
   </div>
 
-  <ul class="lista" *ngIf="mostrarLista">
-    <li *ngFor="let item of lista">{{ item }}</li>
-  </ul>
-
   <div class="resultado-wrapper">
     <div class="resultado" [class.animado]="animando">
       {{ itemSorteado || 'Aguardando sorteio...' }}

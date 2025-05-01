@@ -55,22 +55,6 @@ body {
     }
   }
 
-  ul.lista {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    margin-top: 20px;
-    max-height: 150px;
-    overflow-y: auto;
-    border-top: 1px solid #eee;
-
-    li {
-      padding: 6px 0;
-      border-bottom: 1px solid #eee;
-      font-size: 15px;
-    }
-  }
-
   .resultado-wrapper {
     margin-top: 30px;
     min-height: 60px;

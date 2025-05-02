@@ -1,4 +1,3 @@
-// app.component.spec.ts (100% cobertura com animação e progresso)
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import confetti from 'canvas-confetti';
@@ -55,6 +54,13 @@ describe('AppComponent (100% cobertura)', () => {
   });
 
   describe('Manipulação da lista', () => {
+    test('onInput limpa timeout anterior antes de configurar novo', () => {
+      component.typingTimeout = setTimeout(() => {}, 5000);
+      const clearSpy = jest.spyOn(global, 'clearTimeout');
+      component.textoLista = 'Novo texto';
+      component.onInput();
+      expect(clearSpy).toHaveBeenCalledWith(expect.any(Number));
+    });
     test('carregarLista limpa itens e formata texto corretamente', () => {
       component.textoLista = 'Ana\nCarlos\n \nMaria';
       component.itensSorteados = ['X'];
@@ -174,7 +180,14 @@ describe('AppComponent (100% cobertura)', () => {
   });
 
   describe('Outros comportamentos', () => {
+    test('delay retorna após timeout simulado', async () => {
+      const delayPromise = (component as unknown as { delay(ms: number): Promise<void> }).delay(10);
+      jest.advanceTimersByTime(10);
+      await delayPromise;
+      expect(typeof delayPromise.then).toBe('function');
+    });
     test('quantidadeSorteios setter reinicia itens e mensagem temporária', () => {
+      component.mensagemTimeout = setTimeout(() => {}, 1000);
       component.itensSorteados = ['X'];
       localStorage.setItem('historicoSorteios', '[]');
       component.quantidadeSorteios = 5;

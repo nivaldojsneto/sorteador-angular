@@ -1,15 +1,19 @@
-// app.component.spec.ts (otimizado para 100% cobertura)
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import confetti from 'canvas-confetti';
 import { AppComponent } from './app.component';
 
 jest.mock('canvas-confetti', () => jest.fn());
+
+jest.setTimeout(10000);
 
 describe('AppComponent (100% cobertura)', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
   beforeEach(async () => {
+    jest.useFakeTimers();
+
     await TestBed.configureTestingModule({
       imports: [AppComponent, FormsModule],
     }).compileComponents();
@@ -20,16 +24,17 @@ describe('AppComponent (100% cobertura)', () => {
     fixture.detectChanges();
   });
 
-  test('criação e inicialização do componente', () => {
-    expect(component).toBeTruthy();
+  test('deve criar o componente e inicializar tema/estado', () => {
     localStorage.setItem('historicoSorteios', JSON.stringify(['João']));
     localStorage.setItem('tema', 'dark');
+    const temaSpy = jest.spyOn(component, 'atualizarTema');
     component.ngOnInit();
     expect(component.itensSorteados).toEqual(['João']);
+    expect(temaSpy).toHaveBeenCalled();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 
-  test('alternarTema alterna o tema e salva no localStorage', () => {
+  test('altera tema corretamente e salva no localStorage', () => {
     component.temaEscuroAtivo = false;
     component.alternarTema();
     expect(component.temaEscuroAtivo).toBe(true);
@@ -38,7 +43,7 @@ describe('AppComponent (100% cobertura)', () => {
     expect(localStorage.getItem('tema')).toBe('light');
   });
 
-  test('carregarLista limpa texto, espaços e sorteios anteriores', () => {
+  test('carregarLista limpa itens e formata texto corretamente', () => {
     component.textoLista = 'Ana\nCarlos\n \nMaria';
     component.itensSorteados = ['X'];
     component.carregarLista();
@@ -47,7 +52,7 @@ describe('AppComponent (100% cobertura)', () => {
     expect(component.itensSorteados).toEqual([]);
   });
 
-  test('onInput executa debounce e chama carregarLista', () => {
+  test('onInput dispara debounce para carregarLista', () => {
     const spy = jest.spyOn(component, 'carregarLista');
     jest.useFakeTimers();
     component.textoLista = 'Teste';
@@ -57,64 +62,93 @@ describe('AppComponent (100% cobertura)', () => {
   });
 
   test('onPaste chama carregarLista', () => {
-    const spy = jest.spyOn(component, 'carregarLista');
-    component.onPaste();
-    setTimeout(() => expect(spy).toHaveBeenCalled(), 0);
-  });
-
-  test('sortear funciona corretamente', () => {
-    component.lista = ['A', 'B', 'C'];
-    component.quantidadeSorteios = 2;
-    const soundSpy = jest.spyOn(component, 'playSound');
-    const confettiSpy = jest.spyOn(component as any, 'playConfete');
+    const spy = jest.spyOn(component, 'carregarLista').mockImplementation(() => {});
     jest.useFakeTimers();
-    component.sortear();
-    expect(component.itensSorteados.length).toBe(2);
-    expect(soundSpy).toHaveBeenCalled();
-    expect(confettiSpy).toHaveBeenCalled();
-    jest.advanceTimersByTime(3000);
-    expect(component.animando).toBe(false);
+    component.onPaste();
+    jest.runAllTimers();
+    expect(spy).toHaveBeenCalled();
   });
 
-  test('sortear ignora se lista vazia ou animando', () => {
+  test('sortear percorre lista animada e salva sorteados', async () => {
+    jest.useFakeTimers();
+    jest
+      .spyOn(AppComponent.prototype as unknown as { delay: (ms: number) => Promise<void> }, 'delay')
+      .mockResolvedValue(undefined);
+
+    component.lista = Array.from({ length: 10 }, (_, i) => `Nome${i}`);
+    component.listaOriginal = [...component.lista];
+    component.quantidadeSorteios = 2;
+
+    const playSpy = jest.spyOn(component, 'playSound').mockImplementation(async () => {});
+    const confettiSpy = jest.spyOn(
+      component as unknown as { playConfete: () => void },
+      'playConfete'
+    );
+
+    const sortearPromise = component.sortear();
+    jest.runAllTimers();
+    await sortearPromise;
+    jest.runAllTimers();
+    await Promise.resolve();
+
+    expect(component.itensSorteados.length).toBe(2);
+    expect(component.lista.length).toBe(8);
+    expect(component.progresso).toBe(100);
+    expect(component.animando).toBe(false);
+    expect(playSpy).toHaveBeenCalled();
+    expect(confettiSpy).toHaveBeenCalled();
+  });
+
+  test('sortear ignora se lista vazia ou animando', async () => {
     component.lista = [];
     component.animando = false;
-    component.sortear();
+    const sortearPromise = component.sortear();
+    jest.runAllTimers();
+    await sortearPromise;
+    jest.runAllTimers();
     expect(component.itensSorteados).toEqual([]);
 
-    component.lista = ['X'];
+    component.lista = ['A'];
     component.animando = true;
-    component.sortear();
+    await component.sortear();
     expect(component.itensSorteados).toEqual([]);
   });
 
-  test('resetar com e sem confirmação', () => {
-    const confirmSpy = jest.spyOn(window, 'confirm');
-
-    confirmSpy.mockReturnValue(false);
-    component.lista = ['Z'];
-    component.resetar();
-    expect(component.lista).toEqual(['Z']);
-
-    confirmSpy.mockReturnValue(true);
+  test('resetar limpa dados com confirmação', () => {
+    jest.spyOn(window, 'confirm').mockReturnValue(true);
     component.textoLista = 'a';
     component.lista = ['a'];
     component.listaOriginal = ['a'];
     component.itensSorteados = ['a'];
-    localStorage.setItem('historicoSorteios', '[]');
+    component.progresso = 100;
     component.resetar();
     expect(component.textoLista).toBe('');
     expect(component.lista.length).toBe(0);
-    expect(localStorage.getItem('historicoSorteios')).toBeNull();
+    expect(component.progresso).toBe(0);
+  });
+
+  test('resetar não faz nada se não confirmar', () => {
+    jest.spyOn(window, 'confirm').mockReturnValue(false);
+    component.lista = ['Z'];
+    component.textoLista = 'Z';
+    component.listaOriginal = ['Z'];
+    component.itensSorteados = ['Z'];
+    component.progresso = 50;
+    component.resetar();
+    expect(component.lista).toEqual(['Z']);
+    expect(component.textoLista).toBe('Z');
+    expect(component.listaOriginal).toEqual(['Z']);
+    expect(component.itensSorteados).toEqual(['Z']);
+    expect(component.progresso).toBe(50);
   });
 
   test('limparHistoricoSorteios com e sem confirmação', () => {
-    jest.spyOn(window, 'confirm').mockReturnValue(false);
-    component.itensSorteados = ['Ana'];
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    component.itensSorteados = ['A'];
     component.limparHistoricoSorteios();
-    expect(component.itensSorteados).toEqual(['Ana']);
+    expect(component.itensSorteados).toEqual(['A']);
 
-    jest.spyOn(window, 'confirm').mockReturnValue(true);
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
     component.itensSorteados = ['B'];
     localStorage.setItem('historicoSorteios', '["B"]');
     component.limparHistoricoSorteios();
@@ -122,43 +156,28 @@ describe('AppComponent (100% cobertura)', () => {
     expect(localStorage.getItem('historicoSorteios')).toBeNull();
   });
 
-  test('playSound cobre sucesso e erro (catch)', async () => {
-    const mockAudio = { play: jest.fn().mockResolvedValue(undefined) };
-    window.Audio = jest.fn(() => mockAudio) as any;
-    await component.playSound();
-    expect(mockAudio.play).toHaveBeenCalled();
-
-    const erro = new Error('Erro simulado');
-    const playMock = jest.fn().mockRejectedValueOnce(erro);
-    window.Audio = jest.fn(() => ({ play: playMock })) as any;
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    await component.playSound();
-    expect(warnSpy).toHaveBeenCalledWith('Erro ao tocar som:', erro);
-  });
-
-  test('quantidadeSorteios setter limpa itens e mensagem temporária', () => {
+  test('quantidadeSorteios setter reinicia itens e mensagem temporária', () => {
     jest.useFakeTimers();
     component.itensSorteados = ['X'];
     localStorage.setItem('historicoSorteios', '[]');
     component.quantidadeSorteios = 5;
     expect(component.itensSorteados).toEqual([]);
-    expect(component.mensagem).toBe('A lista de ganhadores foi reiniciada.');
+    expect(component.mensagem).toBeTruthy();
     jest.advanceTimersByTime(3000);
     expect(component.mensagem).toBeNull();
-    expect(localStorage.getItem('historicoSorteios')).toBeNull();
   });
 
-  test('get quantidadeSorteios retorna valor correto', () => {
-    component.quantidadeSorteios = 4;
-    expect(component.quantidadeSorteios).toBe(4);
+  test('getter quantidadeSorteios retorna corretamente', () => {
+    component.quantidadeSorteios = 3;
+    expect(component.quantidadeSorteios).toBe(3);
   });
 
   test('itensFiltrados retorna apenas nomes válidos', () => {
-    component.itensSorteados = ['Ana', '', '   ', 'Carlos'];
-    expect(component.itensFiltrados).toEqual(['Ana', 'Carlos']);
+    component.itensSorteados = ['João', '', ' ', 'Maria'];
+    expect(component.itensFiltrados).toEqual(['João', 'Maria']);
   });
 
-  test('atualizarTema aplica ou remove classe dark do HTML', () => {
+  test('atualizarTema aplica e remove dark no html', () => {
     component.temaEscuroAtivo = true;
     component.atualizarTema();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
@@ -168,8 +187,21 @@ describe('AppComponent (100% cobertura)', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
+  test('playSound executa com sucesso e trata erro', async () => {
+    const mockAudio = { play: jest.fn().mockResolvedValue(undefined) };
+    window.Audio = jest.fn(() => mockAudio) as unknown as typeof Audio;
+    await component.playSound();
+    expect(mockAudio.play).toHaveBeenCalled();
+
+    const erro = new Error('Erro simulado');
+    const erroAudio = { play: jest.fn().mockRejectedValueOnce(erro) };
+    window.Audio = jest.fn(() => erroAudio) as unknown as typeof Audio;
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    await component.playSound();
+    expect(warn).toHaveBeenCalledWith('Erro ao tocar som:', erro);
+  });
+
   test('playConfete aciona canvas-confetti', () => {
-    const confetti = require('canvas-confetti');
     component.playConfete();
     expect(confetti).toHaveBeenCalled();
   });

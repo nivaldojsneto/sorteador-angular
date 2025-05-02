@@ -2,9 +2,16 @@
   class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col sm:items-center sm:justify-center p-4"
 >
   <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mt-8">
-    <!-- Título + Alternância de Tema -->
+    <!-- Cabeçalho com logo e botão de tema -->
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">Sorteador de Nomes</h1>
+      <div class="flex items-center gap-4">
+        <img src="assets/logo-light.svg" alt="Logo Sorteador" class="h-10 block dark:hidden" />
+        <img
+          src="assets/logo-dark.svg"
+          alt="Logo Sorteador (dark)"
+          class="h-10 hidden dark:block"
+        />
+      </div>
       <button
         (click)="alternarTema()"
         class="relative inline-flex items-center w-14 h-8 rounded-full transition-colors duration-300 ease-in-out bg-gray-300 dark:bg-gray-700"
@@ -22,7 +29,6 @@
         >
           <path d="M10 15a5 5 0 100-10 5 5 0 000 10z"></path>
         </svg>
-
         <svg
           class="absolute left-7 top-1 w-6 h-6 text-gray-200 transition-opacity duration-300"
           fill="currentColor"
@@ -37,23 +43,27 @@
     </div>
 
     <!-- Textarea -->
-    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-      Cole os nomes (um por linha):
-    </label>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+      >Cole ou digite os itens no campo baixo (um por linha):</label
+    >
     <textarea
       [(ngModel)]="textoLista"
       (input)="onInput()"
       (paste)="onPaste()"
       class="w-full h-40 p-3 border rounded-lg mb-4 focus:outline-none focus:ring focus:border-blue-300 resize-none dark:bg-gray-700 dark:text-white"
-      placeholder="Ex: Ana\nCarlos\nMaria"
     ></textarea>
 
-    <!-- Quantidade e botão Sortear -->
+    <!-- Contador de linhas -->
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 fade-in">
+      Total de linhas: {{ lista.length }}
+    </p>
+
+    <!-- Controles -->
     <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
       <div class="flex-1">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Quantidade de sorteios:
-        </label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >Quantidade de sorteios:</label
+        >
         <input
           type="number"
           [(ngModel)]="quantidadeSorteios"
@@ -70,7 +80,7 @@
       </button>
     </div>
 
-    <!-- Mensagem -->
+    <!-- Mensagem de feedback -->
     <div
       *ngIf="mensagem"
       class="bg-yellow-100 dark:bg-yellow-200 text-yellow-700 text-sm p-2 rounded mb-4 fade-in"
@@ -78,15 +88,33 @@
       {{ mensagem }}
     </div>
 
-    <!-- Resultados -->
-    <div *ngIf="itensFiltrados.length > 0" id="resultado" class="mb-6 fade-in">
+    <!-- Animação e progresso -->
+    <div *ngIf="listaOriginal.length > 0 && progresso > 0" class="mb-6 text-center">
+      <p class="text-blue-500 text-lg font-medium mb-2 animate-pulse">
+        Sorteando entre {{ listaOriginal.length }} itens...
+      </p>
+
+      <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-2">
+        <div
+          class="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+          [style.width.%]="animando ? progresso : 100"
+        ></div>
+      </div>
+
+      <p *ngIf="animando" class="text-sm italic text-gray-600 dark:text-gray-400">
+        Verificando: {{ nomeEmFoco }}
+      </p>
+    </div>
+
+    <!-- Resultado -->
+    <div *ngIf="itensFiltrados.length > 0 && !animando" id="resultado" class="mb-6 fade-in">
       <h2 class="text-lg font-semibold mb-2">Resultado:</h2>
-      <ul class="list-disc list-inside space-y-1 text-green-700 dark:text-green-400">
+      <ul class="list-disc list-inside space-y-1 text-green-700 dark:text-green-400 animate-bounce">
         <li *ngFor="let nome of itensFiltrados">{{ nome }}</li>
       </ul>
     </div>
 
-    <!-- Botões secundários -->
+    <!-- Ações secundárias -->
     <div class="flex justify-end gap-2">
       <button (click)="resetar()" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
         Limpar lista
